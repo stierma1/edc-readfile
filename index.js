@@ -11,7 +11,9 @@ class ReadFileWorker extends Worker {
   work(req){
     var filePath = req.body;
     var encoding = "utf8";
+    var isObj = false;
     if(typeof(req.body) !== "string"){
+      isObj = true;
       filePath = req.body.path;
       encoding = req.body.encoding || "utf8";
     } else {
@@ -23,7 +25,11 @@ class ReadFileWorker extends Worker {
         req.status(err).next();
         return;
       }
-      req.body = contents;
+      if(isObj){
+        req.body.fileContents = contents;
+      } else {
+        req.body = contents;
+      }
       req.next();
     });
   }
